@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Table</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      /* Add your custom styles here */
+      .table-responsive {
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body onload="loaddata()">
+    <button type="button" class="btn btn-primary" onclick="takechange()">
+      Add Customer
+    </button>
+    <div class="container mt-5">
+      <h1 class="text-center">Customer List</h1>
+    </div>
+    <div class="container mt-5">
+      <div class="table-responsive">
+        <table class="table table-bordered" id="data-table">
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Address</th>
+              <th>City</th>
+              <th>State</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Data will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      // Sample data array (replace with your actual data)
+      function takechange() {
+        window.location.href = "http://127.0.0.1:3000/CreateTable.html";
+      }
+      function loaddata() {
+        // Replace 'http://localhost:8080/api/login' with the actual API endpoint
+        const apiUrl = "http://localhost:8080/api/getCustomerList";
+        const authToken = localStorage.getItem("authToken");
+
+        const myHeaders = new Headers();
+        if (authToken) {
+          myHeaders.append("Authorization", authToken);
+        }
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Access-Control-Allow-Origin", "*");
+
+        fetch(apiUrl, {
+          method: "GET",
+          headers: myHeaders,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.log("here response is ", response);
+              // throw new Error("Network response was not ok");
+              alert("wrong credential");
+              return;
+            }
+            return response.json();
+          })
+          .then((data) => {
+            // Handle the API response data
+            console.log("API Response:", data);
+            populateTable(data);
+
+            //     setTimeout(() => {
+            //       window.location.href =
+            //         "http://127.0.0.1:3000/CustomerListScreen.html";
+            //     }, 1000);
+          })
+          .catch((error) => {
+            // Handle errors during the API call
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            alert("something went wrong");
+          });
+      }
+
+      // Function to populate the table with data
+      function populateTable(data) {
+        const tableBody = document.getElementById("table-body");
+
+        data.map((person) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                <td>${person.first_name}</td>
+                <td>${person.last_name}</td>
+                <td>${person.address}</td>
+                <td>${person.city}</td>
+                <td>${person.state}</td>
+                <td>${person.email}</td>
+                <td>${person.phone}</td>
+                <td><button class="btn btn-primary">Edit</button> <button class="btn btn-danger">Delete</button></td>
+            `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      // Call the function to populate the table with data
+    </script>
+  </body>
+</html>

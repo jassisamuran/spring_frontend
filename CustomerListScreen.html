@@ -51,10 +51,13 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+      let data;
+
       // Sample data array (replace with your actual data)
       function takechange() {
         window.location.href = "http://127.0.0.1:3000/CreateTable.html";
       }
+
       function loaddata() {
         // Replace 'http://localhost:8080/api/login' with the actual API endpoint
         const apiUrl = "http://localhost:8080/api/getCustomerList";
@@ -80,15 +83,13 @@
             }
             return response.json();
           })
-          .then((data) => {
+          .then((responseData) => {
+            // Set the global data variable with the fetched data
+            data = responseData;
+
             // Handle the API response data
             console.log("API Response:", data);
             populateTable(data);
-
-            //     setTimeout(() => {
-            //       window.location.href =
-            //         "http://127.0.0.1:3000/CustomerListScreen.html";
-            //     }, 1000);
           })
           .catch((error) => {
             // Handle errors during the API call
@@ -104,7 +105,10 @@
       function populateTable(data) {
         const tableBody = document.getElementById("table-body");
 
-        data.map((person) => {
+        // Clear existing table rows
+        tableBody.innerHTML = "";
+
+        data.forEach((person) => {
           const row = document.createElement("tr");
           row.innerHTML = `
                 <td>${person.first_name}</td>
@@ -114,15 +118,36 @@
                 <td>${person.state}</td>
                 <td>${person.email}</td>
                 <td>${person.phone}</td>
-                <td><button class="btn btn-primary"onclick="editPerson('${person.uuid}')"  >Edit</button> <button class="btn btn-danger"   onclick="deletePerson('${person.uuid}')" >Delete</button></td>
+                <td><button class="btn btn-primary" onclick="editPerson('${person.uuid}')">Edit</button> <button class="btn btn-danger" onclick="deletePerson('${person.uuid}')">Delete</button></td>
             `;
           tableBody.appendChild(row);
         });
       }
 
       function editPerson(uuid) {
-        console.log(uuid);
+        if (!data) {
+          console.error("Data is not available yet.");
+          return;
+        }
+
+        const personToEdit = data.find((person) => person.uuid === uuid);
+
+        if (personToEdit) {
+          // Encode the person details as a query parameter in the URL
+          const encodedPersonDetails = encodeURIComponent(
+            JSON.stringify(personToEdit)
+          );
+
+          // Construct the URL with the encoded details
+          const editUrl = `http://127.0.0.1:3000/Edit.html?details=${encodedPersonDetails}`;
+
+          // Redirect to the edit page with the encoded details
+          window.location.href = editUrl;
+        } else {
+          console.error(`Person with uuid ${uuid} not found.`);
+        }
       }
+
       function deletePerson(uuid) {
         const apiUrl = "http://localhost:8080/api/delete?uuid=" + uuid;
         const authToken = localStorage.getItem("authToken");
@@ -145,9 +170,9 @@
           })
           .then((data) => {
             console.log("Person deleted successfully:", data);
-            // Redirect only on successful deletion
-            // window.location.href =
-            //   "http://127.0.0.1:3000/CustomerListScreen.html";
+            console.log(apiUrl);
+            // Update the table with the new data after deletion
+            loaddata();
           })
           .catch((error) => {
             // Handle errors during the API call
@@ -159,8 +184,6 @@
             // You may choose to handle errors differently or not redirect at all
           });
       }
-
-      // Call the function to populate the table with data
     </script>
   </body>
 </html>

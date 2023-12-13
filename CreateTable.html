@@ -111,11 +111,9 @@
             })
             .catch((error) => {
               // Handle errors during the API call
-              console.error(
-                "There was a problem with the fetch operation:",
-                error
-              );
-              alert("Something went wrong during the API call.");
+
+              window.location.href =
+                "http://127.0.0.1:3000/CustomerListScreen.html";
             });
         }
       </script>

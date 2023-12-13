@@ -3,19 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Responsive Table with Input</title>
-    <!-- Include Bootstrap CSS -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <style>
-      /* Add your custom styles here */
-      .table-responsive {
-        overflow-x: auto;
-      }
-    </style>
+    <title>API Call Example</title>
   </head>
+
   <body>
     <div class="container mt-5">
       <form id="data-form">
@@ -57,72 +47,78 @@
             <input type="tel" class="form-control" id="phoneNumber" required />
           </div>
         </div>
-        <button type="button" class="btn btn-primary mt-3" onclick="addRow()">
-          Add Entry
+        <button
+          type="button"
+          class="btn btn-primary mt-3"
+          onclick="makeApiCall()"
+        >
+          Create Assignment
         </button>
       </form>
 
-     
+      <script>
+        function makeApiCall() {
+          const apiUrl =
+            "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?create";
 
-    <!-- Include Bootstrap JS and Popper.js (required for Bootstrap) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+          const authToken = localStorage.getItem("authToken");
 
-    <script>
-      function addRow() {
-        const first_name = document.getElementById("firstName").value;
-        const last_name = document.getElementById("lastName").value;
-        const address = document.getElementById("address").value;
-        const street = document.getElementById("street").value;
-        const city = document.getElementById("city").value;
-        const state = document.getElementById("state").value;
-        const email = document.getElementById("email").value;
-        const phone = document.getElementById("phoneNumber").value; 
-         const apiUrl = "http://localhost:8080/api/createCustomer";
+          const first_name = document.getElementById("firstName").value;
+          const last_name = document.getElementById("lastName").value;
+          const address = document.getElementById("address").value;
+          const street = document.getElementById("street").value;
+          const city = document.getElementById("city").value;
+          const state = document.getElementById("state").value;
+          const email = document.getElementById("email").value;
+          const phone = document.getElementById("phoneNumber").value;
 
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("Access-Control-Allow-Origin", "*");
-         const authToken = localStorage.getItem("authToken");
-        if (authToken) {
+          const requestBody = {
+            first_name,
+            last_name,
+            street,
+            address,
+            city,
+            state,
+            email,
+            phone,
+          };
+
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
           myHeaders.append("Authorization", authToken);
+
+          fetch(apiUrl, {
+            method: "POST",
+            headers: myHeaders,
+            body: JSON.stringify(requestBody),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Handle the API response data
+              console.log("API Response:", data);
+              if (data.status === 201) {
+                alert("Successfully Created");
+              } else {
+                alert(
+                  "API call was successful, but the response indicates an error."
+                );
+              }
+            })
+            .catch((error) => {
+              // Handle errors during the API call
+              console.error(
+                "There was a problem with the fetch operation:",
+                error
+              );
+              alert("Something went wrong during the API call.");
+            });
         }
-        fetch(apiUrl, {
-          method: "POST",
-          headers: myHeaders,
-          
-        })
-          .then((response) => {
-            if (!response.ok) {
-              console.log("here response is ", response);
-              // throw new Error("Network response was not ok");
-              alert("wrong credential");
-              return;
-            }
-            return response.json();
-          })
-          .then((data) => {
-            // Handle the API response data
-            console.log("API Response:", data);
-            const authToken = data.access_token; // Replace 'token' with the actual key from your API response
-            localStorage.setItem("authToken", "Bearer " + authToken);
-
-            window.location.href =
-              "http://127.0.0.1:3000/CustomerListScreen.html";
-          })
-          .catch((error) => {
-            // Handle errors during the API call
-            console.error(
-              "There was a problem with the fetch operation:",
-              error
-            );
-            alert("something went wrong");
-          });
-      }
-
-       
-      }
-    </script>
+      </script>
+    </div>
   </body>
 </html>

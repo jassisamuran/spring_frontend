@@ -114,12 +114,16 @@
                 <td>${person.state}</td>
                 <td>${person.email}</td>
                 <td>${person.phone}</td>
-                <td><button class="btn btn-primary">Edit</button> <button class="btn btn-danger">Delete</button></td>
+                <td><button class="btn btn-primary"  >Edit</button> <button class="btn btn-danger"  onclick="deletePerson(this)>Delete</button></td>
             `;
           tableBody.appendChild(row);
         });
       }
 
+      function deletePerson() {
+        const uuid = button.getAttribute("data-uuid");
+        console.log(uuid);
+      }
       // Call the function to populate the table with data
     </script>
   </body>

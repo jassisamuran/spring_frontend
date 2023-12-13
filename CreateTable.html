@@ -58,8 +58,7 @@
 
       <script>
         function makeApiCall() {
-          const apiUrl =
-            "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?create";
+          const apiUrl = "http://localhost:8080/api/createCustomer";
 
           const authToken = localStorage.getItem("authToken");
 
@@ -82,6 +81,7 @@
             email,
             phone,
           };
+          console.log(requestBody);
 
           const myHeaders = new Headers();
           myHeaders.append("Content-Type", "application/json");

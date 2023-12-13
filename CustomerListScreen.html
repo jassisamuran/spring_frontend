@@ -114,16 +114,52 @@
                 <td>${person.state}</td>
                 <td>${person.email}</td>
                 <td>${person.phone}</td>
-                <td><button class="btn btn-primary"  >Edit</button> <button class="btn btn-danger"  onclick="deletePerson(this)>Delete</button></td>
+                <td><button class="btn btn-primary"onclick="editPerson('${person.uuid}')"  >Edit</button> <button class="btn btn-danger"   onclick="deletePerson('${person.uuid}')" >Delete</button></td>
             `;
           tableBody.appendChild(row);
         });
       }
 
-      function deletePerson() {
-        const uuid = button.getAttribute("data-uuid");
+      function editPerson(uuid) {
         console.log(uuid);
       }
+      function deletePerson(uuid) {
+        const apiUrl = "http://localhost:8080/api/delete?uuid=" + uuid;
+        const authToken = localStorage.getItem("authToken");
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Access-Control-Allow-Origin", "*");
+        myHeaders.append("Authorization", authToken);
+
+        fetch(apiUrl, {
+          method: "POST",
+          headers: myHeaders,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              console.log("Error deleting person:", response);
+              alert("Failed to delete person");
+              throw new Error("Failed to delete person");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            console.log("Person deleted successfully:", data);
+            // Redirect only on successful deletion
+            // window.location.href =
+            //   "http://127.0.0.1:3000/CustomerListScreen.html";
+          })
+          .catch((error) => {
+            // Handle errors during the API call
+            console.error(
+              "There was a problem with the fetch operation:",
+              error
+            );
+            alert("Something went wrong while deleting person");
+            // You may choose to handle errors differently or not redirect at all
+          });
+      }
+
       // Call the function to populate the table with data
     </script>
   </body>

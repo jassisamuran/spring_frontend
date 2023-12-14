@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>API Call Example</title>
+  </head>
+
+  <body>
+    <div class="container mt-5">
+      <form id="data-form">
+        <div class="form-row">
+          <div class="col-md-6">
+            <label for="firstName">First Name</label>
+            <input type="text" class="form-control" id="first_name" required />
+          </div>
+          <div class="col-md-6">
+            <label for="lastName">Last Name</label>
+            <input type="text" class="form-control" id="last_name" required />
+          </div>
+        </div>
+        <div class="form-row mt-3">
+          <div class="col-md-6">
+            <label for="address">Address</label>
+            <input type="text" class="form-control" id="address" required />
+          </div>
+          <div class="col-md-6">
+            <label for="street">Street</label>
+            <input type="text" class="form-control" id="street" required />
+          </div>
+        </div>
+        <div class="form-row mt-3">
+          <div class="col-md-3">
+            <label for="city">City</label>
+            <input type="text" class="form-control" id="city" required />
+          </div>
+          <div class="col-md-3">
+            <label for="state">State</label>
+            <input type="text" class="form-control" id="state" required />
+          </div>
+          <div class="col-md-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" id="email" required />
+          </div>
+          <div class="col-md-3">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" required />
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary mt-3"
+          onclick="makeApiCall()"
+        >
+          Edit
+        </button>
+      </form>
+
+      <script>
+        let uuid;
+        function getUrlParameter(name) {
+          name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
+          var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+          var results = regex.exec(location.search);
+          return results === null
+            ? ""
+            : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+
+        // Get the encoded data from the URL
+        var encodedPersonDetails = getUrlParameter("details");
+
+        // Decode the URL-encoded data
+        var decodedData = decodeURIComponent(encodedPersonDetails);
+
+        // Parse the JSON data
+        var jsonData = JSON.parse(decodedData);
+        console.log(jsonData.first_name);
+        document.addEventListener("DOMContentLoaded", function () {
+          document.getElementById("first_name").value = jsonData.first_name;
+          document.getElementById("last_name").value = jsonData.last_name;
+          document.getElementById("address").value = jsonData.address;
+          document.getElementById("street").value = jsonData.street;
+          document.getElementById("city").value = jsonData.city;
+          document.getElementById("state").value = jsonData.state;
+          document.getElementById("email").value = jsonData.email;
+          document.getElementById("phone").value = jsonData.phone;
+          uuid = jsonData.uuid;
+        });
+
+        function makeApiCall() {
+          const apiUrl = `http://localhost:8080/api/update?uuid=${uuid}`;
+
+          const authToken = localStorage.getItem("authToken");
+
+          const first_name = document.getElementById("first_name").value;
+          const last_name = document.getElementById("last_name").value;
+          const address = document.getElementById("address").value;
+          const street = document.getElementById("street").value;
+          const city = document.getElementById("city").value;
+          const state = document.getElementById("state").value;
+          const email = document.getElementById("email").value;
+          const phone = document.getElementById("phone").value;
+
+          const requestBody = {
+            first_name,
+            last_name,
+            street,
+            address,
+            city,
+            state,
+            email,
+            phone,
+          };
+          // console.log(requestBody);
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+          myHeaders.append("Authorization", authToken);
+
+          fetch(apiUrl, {
+            method: "POST",
+            headers: myHeaders,
+            body: JSON.stringify(requestBody),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Network response was not ok");
+              }
+              return response.json();
+            })
+            .then((data) => {
+              // Handle the API response data
+              console.log("API Response:", data);
+
+              window.location.href =
+                "http://127.0.0.1:3000/CustomerListScreen.html";
+              if (data.status === 201 || data.status === 200) {
+                alert("Successfully Created");
+              } else {
+                alert(
+                  "API call was successful, but the response indicates an error."
+                );
+              }
+            })
+            .catch((error) => {
+              window.location.href =
+                "http://127.0.0.1:3000/CustomerListScreen.html";
+            });
+        }
+      </script>
+    </div>
+  </body>
+</html>

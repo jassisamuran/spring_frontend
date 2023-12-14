@@ -125,6 +125,8 @@
       }
 
       function editPerson(uuid) {
+        console.log("data is", data);
+        console.log("uuid ", uuid);
         if (!data) {
           console.error("Data is not available yet.");
           return;
@@ -140,7 +142,7 @@
 
           // Construct the URL with the encoded details
           const editUrl = `http://127.0.0.1:3000/Edit.html?details=${encodedPersonDetails}`;
-
+          console.log(personToEdit);
           // Redirect to the edit page with the encoded details
           window.location.href = editUrl;
         } else {

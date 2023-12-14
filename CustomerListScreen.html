@@ -61,7 +61,7 @@
       function loaddata() {
         // Replace 'http://localhost:8080/api/login' with the actual API endpoint
         const apiUrl =
-          "https://neoenfdfsoifsf.onrender.com/api/getCustomerList";
+          "https://cors-spring-change.onrender.com/api/getCustomerList";
         const authToken = localStorage.getItem("authToken");
 
         const myHeaders = new Headers();
@@ -153,7 +153,7 @@
 
       function deletePerson(uuid) {
         const apiUrl =
-          "https://neoenfdfsoifsf.onrender.com/api/delete?uuid=" + uuid;
+          "https://cors-spring-change.onrender.com/api/delete?uuid=" + uuid;
         const authToken = localStorage.getItem("authToken");
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
